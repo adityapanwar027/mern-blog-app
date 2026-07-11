@@ -10,7 +10,7 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    const res = await axios.post("http://localhost:5000/api/auth/signup", {
+    const res = await axios.post("https://mern-blog-backened-fke2bxe0bqdvcyf8.southeastasia-01.azurewebsites.net/api/auth/signup", {
       name,
       email,
       password,

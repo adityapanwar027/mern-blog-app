@@ -1,0 +1,25 @@
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
+const blogRoutes = require("./routes/blogRoutes");
+
+dotenv.config();
+
+const app = express();
+
+connectDB();
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/auth", authRoutes);
+app.use("/api/blogs", blogRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Blog API Running 🚀");
+});
+
+module.exports = app;

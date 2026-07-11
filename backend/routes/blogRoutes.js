@@ -8,10 +8,12 @@ const {
 } = require("../controllers/blogController");
 
 const protect = require("../middleware/authMiddleware");
+const upload = require("../middleware/upload");
 
 const router = express.Router();
 
-router.post("/", protect, createBlog);
+router.post("/", protect, upload.single("image"), createBlog);
+
 router.get("/", getBlogs);
 router.delete("/:id", protect, deleteBlog);
 router.put("/:id", protect, updateBlog);

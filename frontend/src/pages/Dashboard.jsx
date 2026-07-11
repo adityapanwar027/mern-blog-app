@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Dashboard() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [blogs, setBlogs] = useState([]);
+const [title, setTitle] = useState("");
+const [content, setContent] = useState("");
+const [image, setImage] = useState(null);
+const [blogs, setBlogs] = useState([]);
 
   const [editId, setEditId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -19,21 +20,28 @@ function Dashboard() {
   const createBlog = async (e) => {
     e.preventDefault();
 
-    await axios.post(
-      "http://localhost:5000/api/blogs",
-      { title, content },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const formData = new FormData();
 
-    alert("Blog created");
+formData.append("title", title);
+formData.append("content", content);
+formData.append("image", image);
 
-    setTitle("");
-    setContent("");
-    fetchBlogs();
+await axios.post(
+  "http://localhost:5000/api/blogs",
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+alert("Blog created");
+
+setTitle("");
+setContent("");
+setImage(null);
+fetchBlogs();
   };
 
   const startEdit = (blog) => {
@@ -46,24 +54,31 @@ function Dashboard() {
   const updateBlog = async (e) => {
     e.preventDefault();
 
-    await axios.put(
-      `http://localhost:5000/api/blogs/${editId}`,
-      { title, content },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const formData = new FormData();
+
+formData.append("title", title);
+formData.append("content", content);
+formData.append("image", image);
+
+await axios.put(
+  `http://localhost:5000/api/blogs/${editId}`,
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
     alert("Blog updated");
 
     setTitle("");
-    setContent("");
-    setEditId(null);
-    setIsEditing(false);
+setContent("");
+setImage(null);
+setEditId(null);
+setIsEditing(false);
 
-    fetchBlogs();
+fetchBlogs();
   };
 
   const deleteBlog = async (id) => {
@@ -108,32 +123,41 @@ function Dashboard() {
             <h2>{isEditing ? "Refine your blog" : "Write something fresh"}</h2>
           </div>
 
-          <form onSubmit={isEditing ? updateBlog : createBlog} className="stacked-form">
-            <label>
-              Title
-              <input
-                type="text"
-                placeholder="Enter title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-            </label>
+         <form onSubmit={isEditing ? updateBlog : createBlog} className="stacked-form">
+  <label>
+    Title
+    <input
+      type="text"
+      placeholder="Enter title"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      required
+    />
+  </label>
 
-            <label>
-              Content
-              <textarea
-                placeholder="Enter content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
-              />
-            </label>
+  <label>
+    Content
+    <textarea
+      placeholder="Enter content"
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+      required
+    />
+  </label>
 
-            <button className="primary-button" type="submit">
-              {isEditing ? "Update Blog" : "Create Blog"}
-            </button>
-          </form>
+  <label>
+    Image
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => setImage(e.target.files[0])}
+    />
+  </label>
+
+  <button className="primary-button" type="submit">
+    {isEditing ? "Update Blog" : "Create Blog"}
+  </button>
+</form>
         </section>
 
         <section className="blogs-panel">
@@ -148,10 +172,24 @@ function Dashboard() {
           <div className="blog-list">
             {blogs.map((blog) => (
               <article className="blog-card" key={blog._id}>
+
                 <div>
-                  <h3>{blog.title}</h3>
-                  <p>{blog.content}</p>
-                </div>
+  {blog.image && (
+  <img
+    src={blog.image}
+    alt={blog.title}
+    style={{
+      width: "100%",
+      maxHeight: "250px",
+      objectFit: "cover",
+      borderRadius: "8px",
+      marginBottom: "10px",
+    }}
+  />
+)}
+  <h3>{blog.title}</h3>
+  <p>{blog.content}</p>
+</div>
 
                 <div className="blog-footer">
                   <small>By {blog.author?.name || "Unknown author"}</small>

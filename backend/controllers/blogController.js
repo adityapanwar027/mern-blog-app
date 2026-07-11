@@ -1,13 +1,25 @@
 const Blog = require("../models/Blog");
+const uploadToAzure = require("../utils/azureUpload");
 
 // CREATE BLOG
 const createBlog = async (req, res) => {
   try {
     const { title, content } = req.body;
 
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl = await uploadToAzure(
+        req.file.buffer,
+        `${Date.now()}-${req.file.originalname}`,
+        req.file.mimetype
+      );
+    }
+
     const blog = await Blog.create({
       title,
       content,
+      image: imageUrl,
       author: req.user.id,
     });
 
@@ -22,41 +34,57 @@ const createBlog = async (req, res) => {
   }
 };
 
-
-// Get all blog
+// GET ALL BLOGS
 const getBlogs = async (req, res) => {
   try {
-
     const blogs = await Blog.find().populate("author", "name email");
 
     res.status(200).json(blogs);
-
   } catch (error) {
-
     res.status(500).json({
       message: error.message,
     });
-
   }
 };
 
-// DELETE BLOG 
- const deleteBlog = async (req, res) => 
-    { try { await Blog.findByIdAndDelete(req.params.id); 
-        res.status(200).json({
-        message: "Blog deleted successfully", }); } 
-        catch (error) { res.status(500).json({ 
-        message: error.message, }); } };
+// DELETE BLOG
+const deleteBlog = async (req, res) => {
+  try {
+    await Blog.findByIdAndDelete(req.params.id);
 
+    res.status(200).json({
+      message: "Blog deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
-        // UPDATE BLOG
+// UPDATE BLOG
 const updateBlog = async (req, res) => {
   try {
     const { title, content } = req.body;
 
+    let updateData = {
+      title,
+      content,
+    };
+
+    if (req.file) {
+      const imageUrl = await uploadToAzure(
+        req.file.buffer,
+        `${Date.now()}-${req.file.originalname}`,
+        req.file.mimetype
+      );
+
+      updateData.image = imageUrl;
+    }
+
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
-      { title, content },
+      updateData,
       { new: true }
     );
 
@@ -75,6 +103,5 @@ module.exports = {
   createBlog,
   getBlogs,
   deleteBlog,
-  updateBlog
+  updateBlog,
 };
-
