@@ -13,7 +13,7 @@ const [blogs, setBlogs] = useState([]);
   const token = localStorage.getItem("token");
 
   const fetchBlogs = async () => {
-    const res = await axios.get("http://localhost:5000/api/blogs");
+    const res = await axios.get("https://mern-blog-backened-fke2bxe0bqdvcyf8.southeastasia-01.azurewebsites.net/api/blogs");
     setBlogs(res.data);
   };
 
@@ -27,7 +27,7 @@ formData.append("content", content);
 formData.append("image", image);
 
 await axios.post(
-  "http://localhost:5000/api/blogs",
+  "https://mern-blog-backened-fke2bxe0bqdvcyf8.southeastasia-01.azurewebsites.net/api/blogs",
   formData,
   {
     headers: {
@@ -61,7 +61,7 @@ formData.append("content", content);
 formData.append("image", image);
 
 await axios.put(
-  `http://localhost:5000/api/blogs/${editId}`,
+  `https://mern-blog-backened-fke2bxe0bqdvcyf8.southeastasia-01.azurewebsites.net/api/blogs${editId}`,
   formData,
   {
     headers: {
@@ -82,7 +82,7 @@ fetchBlogs();
   };
 
   const deleteBlog = async (id) => {
-    await axios.delete(`http://localhost:5000/api/blogs/${id}`, {
+    await axios.delete(`https://mern-blog-backened-fke2bxe0bqdvcyf8.southeastasia-01.azurewebsites.net/api/blogs${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
