@@ -1,7 +1,7 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 
-const blobServiceClient = BlobServiceClient.fromConnectionString(
-  process.env.AZURE_STORAGE_CONNECTION_STRING
+const blobServiceClient = new BlobServiceClient(
+  process.env.AZURE_BLOB_SAS_URL
 );
 
 const containerClient = blobServiceClient.getContainerClient(
